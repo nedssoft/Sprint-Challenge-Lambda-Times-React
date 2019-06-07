@@ -15,40 +15,68 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: true
-    };
-
+      form: {
+        username: '',
+        password: ''
+      }
+    }
   }
-
-  toggle = this.props.toggle();
-
-  toggle() {
-    this.setState(prevState => ({
-      modal: !prevState.modal
-    }));
+  toggle = () => {
+    this.props.showLogin()
+  }
+  inputChangeHandler = (event) => {
+    const value = event.target.value;
+    const targetName = event.target.name;
+    this.setState(prevState =>({
+      ...prevState,
+      form: {
+        ...prevState.form,
+        [targetName]: value
+      }
+    }))
+  }
+  submitForm = () => {
+    if (this.state.form.password && this.state.form.username) {
+      const user = { ...this.state.form }
+      localStorage.setItem('user', JSON.stringify(user));
+      this.setState(prevState => ({
+        ...prevState,
+        form: {
+          username: '',
+          password: ''
+        }
+      }));
+      this.props.showLogin()
+      window.location.reload();
+    }
   }
 
   render() {
     return (
       <div>
-        <Button color="danger" onClick={this.toggle}>{this.props.buttonLabel}</Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+        <p style={{ textDecoration: 'underline', cursor: 'pointer', fontSize: '2rem'}} onClick={this.toggle}>Log in to view the content</p>
+        <Modal isOpen={this.props.showModal} toggle={this.props.showLogin} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Login</ModalHeader>
           <ModalBody>
           <Form>
           <FormGroup>
-            <Label for="exampleEmail">Email</Label>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+            <Label for="exampleEmail">Username</Label>
+            <Input type="email" name="username" id="exampleEmail" placeholder="Username" 
+            value={this.state.username}
+            onChange={this.inputChangeHandler}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="examplePassword">Password</Label>
-            <Input type="password" name="password" id="examplePassword" placeholder="password" />
+            <Input type="password" name="password" id="examplePassword" placeholder="password" 
+            onChange={this.inputChangeHandler}
+            value={this.state.password} />
           </FormGroup>
           </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Login</Button>{' '}
-            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+            <Button color="primary" onClick={this.submitForm}>Login</Button>{' '}
+            <Button color="secondary" onClick={this.props.showLogin}>Cancel</Button>
           </ModalFooter>
         </Modal>
       </div>

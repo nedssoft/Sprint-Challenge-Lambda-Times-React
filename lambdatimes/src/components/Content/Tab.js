@@ -9,6 +9,7 @@ const Tab = props => {
       if (props.tab === props.selectedTab) {
         selectedClass = 'tab active-tab'
       }
+      console.log(selectedClass)
   return (
     <div
       className={selectedClass}
